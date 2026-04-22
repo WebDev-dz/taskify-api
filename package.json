@@ -1,0 +1,23 @@
+{
+  "name": "taskify-api",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "bun run src/index.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/deepseek": "^2.0.29",
+    "@hono/node-server": "^1.19.14",
+    "ai": "^6.0.152",
+    "dotenv": "^17.4.2",
+    "firebase-admin": "^13.8.0",
+    "hono": "^4.12.14",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "tsx": "^4.7.1",
+    "typescript": "^5.8.3"
+  }
+}
