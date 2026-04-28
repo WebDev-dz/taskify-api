@@ -1,11 +1,16 @@
 import { Hono, type Context } from "hono";
+import { createChatStream } from "../controllers/chat.controller";
 import { createGoal } from "../controllers/goal.controller";
 
 const goalRoutes = new Hono();
-const loggerController = (context : Context) => {
+
+const loggerController = <T>(controller : (context : Context) => Promise<T>) => (context : Context) => {
     console.log({req: context.req})
-    return createGoal(context)
+    return controller(context)
 }
-goalRoutes.post("/api/goal", loggerController);
+
+
+goalRoutes.post("/api/goal", loggerController(createGoal));
+goalRoutes.post("/api/chat", loggerController(createChatStream));
 
 export { goalRoutes };

@@ -73,7 +73,9 @@ export function extractPrompt(body: unknown) {
 }
 
 export async function generateGoal(prompt: AiGenerationPrompt): Promise<GeneratedGoal> {
-  if (!process.env.DEEPSEEK_API_KEY) {
+  const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
+  console.log({ DEEPSEEK_API_KEY })
+  if (!DEEPSEEK_API_KEY) {
     throw new ApiError("Missing DeepSeek configuration. Set DEEPSEEK_API_KEY.", 500);
   }
 

@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "bun run src/index.ts"
+    "start": "bun run src/index.ts",
+    "generate:prayers-client": "npx --yes @openapitools/openapi-generator-cli generate -i prayers-api.json -g typescript-fetch -o api/prayers -p importFileExtension=.js -p useSingleRequestParameter=true -p stringEnums=true --skip-validate-spec"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^2.0.29",

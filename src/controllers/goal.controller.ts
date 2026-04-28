@@ -32,6 +32,8 @@ export async function createGoal(c: Context) {
     promptForLogging = promptResult.data;
     const generated = await generateGoal(promptResult.data);
     const { modelUsed, tokensUsed, ...result } = generated;
+    console.log({ result })
+
     const log = await persistAiGenerationLog({
       userId,
       prompt: promptResult.data,
@@ -47,7 +49,7 @@ export async function createGoal(c: Context) {
     }
     c.header("x-ai-generation-id", log.id);
     console.log(JSON.stringify(generated));
-    return c.json(generated, 200);
+    return c.json(log, 200);
   } catch (error) {
     if (promptForLogging && userId) {
       try {

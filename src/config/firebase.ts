@@ -12,6 +12,7 @@ import { getAuth } from "firebase-admin/auth";
 import { FieldValue, Filter, Timestamp, getFirestore } from "firebase-admin/firestore";
 import { getStorage } from "firebase-admin/storage";
 
+let firestoreInstance: ReturnType<typeof getFirestore> | undefined;
 
 function validateServiceAccount(sa: ServiceAccount | undefined): void {
   if (!sa || !sa.projectId || !sa.clientEmail || !sa.privateKey) {
@@ -24,15 +25,7 @@ function validateServiceAccount(sa: ServiceAccount | undefined): void {
 }
 
 function parseFirebaseServiceAccount(): ServiceAccount | undefined {
-  const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON?.trim();
 
-  if (serviceAccountJson) {
-    try {
-      return normalizeServiceAccount(JSON.parse(serviceAccountJson));
-    } catch {
-      throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON contains invalid JSON.");
-    }
-  }
 
   const projectId = process.env.FIREBASE_PROJECT_ID?.trim();
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL?.trim();
@@ -49,30 +42,6 @@ function parseFirebaseServiceAccount(): ServiceAccount | undefined {
   };
 }
 
-function normalizeServiceAccount(value: unknown): ServiceAccount {
-  const record = value as Record<string, unknown>;
-
-  return {
-    projectId:
-      typeof record.projectId === "string"
-        ? record.projectId
-        : typeof record.project_id === "string"
-          ? record.project_id
-          : undefined,
-    clientEmail:
-      typeof record.clientEmail === "string"
-        ? record.clientEmail
-        : typeof record.client_email === "string"
-          ? record.client_email
-          : undefined,
-    privateKey:
-      typeof record.privateKey === "string"
-        ? record.privateKey.replace(/\\n/g, "\n")
-        : typeof record.private_key === "string"
-          ? record.private_key.replace(/\\n/g, "\n")
-          : undefined,
-  };
-}
 
 function buildFirebaseOptions(): AppOptions {
   const serviceAccount = parseFirebaseServiceAccount();
@@ -113,7 +82,15 @@ export function getFirebaseAdminApp(): App {
 }
 
 export function getFirebaseDb() {
-  return getFirestore(getFirebaseAdminApp());
+  if (firestoreInstance) {
+    return firestoreInstance;
+  }
+
+  const db = getFirestore(getFirebaseAdminApp());
+  db.settings({ ignoreUndefinedProperties: true });
+  firestoreInstance = db;
+
+  return db;
 }
 
 export function getFirebaseAuth() {
